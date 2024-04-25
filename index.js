@@ -40,6 +40,15 @@ app.post("/register-student", (req, res) => {
     })
 });
 
+app.get("/getStudents", (req, res) => {
+    let SQL = "SELECT a.id_aluno, a.nome_aluno, a.email_aluno, t.nome_turma FROM alunos AS a JOIN turmas AS t ON a.turma_id = id_turma;"
+
+    db.query(SQL, (err, result) => {
+        if(err) console.log(err)
+        else res.send(result)
+    })
+})
+
 app.get("/getGroups", (req, res) => {
     let SQL = "SELECT * FROM turmas";
 
