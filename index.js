@@ -1,7 +1,7 @@
-const express = require("express");
+import express from 'express'
 const app = express();
-const mysql = require("mysql2");
-const cors = require("cors");
+import { createPool } from "mysql2";
+import cors from "cors";
 
 const corsOptions = {
     origin: 'http://localhost:3000', 
@@ -10,10 +10,9 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions));     
-app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-const db = mysql.createPool({
+const db = createPool({
     host: "localhost",
     user: "root",
     password: "artcnt2706@!",
