@@ -152,6 +152,16 @@ app.put("/edit", (req, res) => {
     })
 })
 
+app.put("/editStatus", (req, res) => {
+    const {status_id, rent_id} = req.body;
+    let SQL = `UPDATE alugueis SET status_id=${status_id} WHERE id_aluguel=${rent_id}`;
+
+    db.query(SQL, (err, result) => {
+        if(err) console.log(err)
+        else res.send(result)
+    })
+})
+
 app.delete("/delete/:id", (req, res) => {
     const { id } = req.params;
     let SQL = `DELETE FROM livros WHERE id_livro = ${id}`
@@ -161,43 +171,52 @@ app.delete("/delete/:id", (req, res) => {
     })
 });
 
-app.post("/rent", (req, res) => {
-    const {book_id, responsible_rent, student, status_rent} = req.body;
+app.delete("/deleteStudent/:id", (req, res) => {
+    const { id } = req.params;
+    let SQL = `DELETE FROM alunos WHERE id_aluno = ${id}`
+    db.query(SQL, (err, result) => {
+        if(err) console.log(err);
+        else res.send(result);
+    })
+});
 
-    let SQL = `INSERT INTO alugueis (responsavel_aluguel, livro_id, aluno_id, status_id)
-    VALUES ('${responsible_rent}', ${book_id}, ${student}, ${status_rent});`
+app.post("/rent", (req, res) => {
+    const {book_id, responsible_rent, student, status_rent, date_return} = req.body;
+
+    let SQL = `INSERT INTO alugueis (responsavel_aluguel, livro_id, aluno_id, status_id, data_devolucao)
+    VALUES ('${responsible_rent}', ${book_id}, ${student}, ${status_rent}, '${date_return}');`
 
     db.query(SQL, (err, result) => {
         console.log(err);
     });
 });
 
-app.post("/amountRents", (req, res) => {
-    const { student_id } = req.body;
-
-    let SQL = `SELECT COUNT(aluno_id) FROM alugueis WHERE aluno_id = ${student_id};`
+app.get("/rents", (req, res) => {
+    let SQL = "SELECT a.id_aluguel, a.responsavel_aluguel, a.data_aluguel, a.data_devolucao, l.url_imagem, l.nome_livro, al.nome_aluno, t.nome_turma, s.tipo FROM alugueis AS a JOIN livros AS l ON a.livro_id = id_livro JOIN alunos AS al ON a.aluno_id = id_aluno JOIN turmas AS t ON al.turma_id = id_turma JOIN status AS s ON a.status_id = id_status WHERE id_status=1;"
 
     db.query(SQL, (err, result) => {
-        if(err) {
-            res.send(err);
-        } if (SQL > 2) {
-            res.send({msg: "O aluno não pode ter mais um aluguel"})
-        } else {
-            res.send({msg: "Pode "});
-        }
+        if (err) console.log(err)
+        else res.send(result);
     })
-})
+});
 
-// db.query(SQL, (err, result) => {
-//     if(err) {
-//         res.send(err);
-//     }
-//     if(result.length > 0) {
-//         res.send({msg: "Usuário logado"});
-//     } else {
-//         res.send({msg: "Usuário negado"});
-//     }
-// })
+app.get("/rents-pending", (req, res) => {
+    let SQL = "SELECT a.id_aluguel, a.responsavel_aluguel, a.data_aluguel, a.data_devolucao, l.url_imagem, l.nome_livro, al.nome_aluno, t.nome_turma, s.tipo FROM alugueis AS a JOIN livros AS l ON a.livro_id = id_livro JOIN alunos AS al ON a.aluno_id = id_aluno JOIN turmas AS t ON al.turma_id = id_turma JOIN status AS s ON a.status_id = id_status WHERE id_status=2;"
+
+    db.query(SQL, (err, result) => {
+        if (err) console.log(err)
+        else res.send(result);
+    });
+});
+
+app.get("/rents-returned", (req, res) => {
+    let SQL = "SELECT a.id_aluguel, a.responsavel_aluguel, a.data_aluguel, a.data_devolucao, l.url_imagem, l.nome_livro, al.nome_aluno, t.nome_turma, s.tipo FROM alugueis AS a JOIN livros AS l ON a.livro_id = id_livro JOIN alunos AS al ON a.aluno_id = id_aluno JOIN turmas AS t ON al.turma_id = id_turma JOIN status AS s ON a.status_id = id_status WHERE id_status=3;"
+
+    db.query(SQL, (err, result) => {
+        if (err) console.log(err)
+        else res.send(result);
+    });
+});
 
 app.listen(3001, () => {
     console.log("rodando servidor")

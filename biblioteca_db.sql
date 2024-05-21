@@ -154,7 +154,7 @@ l.n_exemplares,
 l.data_publicacao
 FROM livros AS l 
 JOIN autores AS a ON l.autor_id = id_autor 
-JOIN editoras AS e ON l+.editora_id = id_editora
+JOIN editoras AS e ON l.editora_id = id_editora
 JOIN generos AS g ON l.genero_id = id_genero
 ORDER BY id_livro ASC;
 
@@ -203,24 +203,28 @@ INSERT INTO status(id_status, tipo) VALUES
 (2, 'Atrasado'),
 (3, 'Entregue');
 
--- SELECIONA OS TIPO DE STATUS PARA OS ALUGUÉISs
+-- SELECIONA OS TIPO DE STATUS PARA OS ALUGUÉIS
 SELECT * FROM status;
 
 -- CADASTRO DE ALUGUEIS
-INSERT INTO alugueis (responsavel_aluguel, livro_id, aluno_id, status_id)
-VALUES ('Vanessa', 2, 2, 1);
+INSERT INTO alugueis (responsavel_aluguel, livro_id, aluno_id, status_id, data_devolucao)
+VALUES ('Kauã', 6, 1, 1, '2023-12-12');
 
 -- SELECIONA TODOS OS ALUGUEIS
 SELECT * FROM alugueis;	
-SELECT COUNT(aluno_id) FROM alugueis WHERE aluno_id = 4;
 
 -- SELECIONA RESPONSÁVEL DO ALUGUEL COM SUA DATA, O LIVRO ALUGADO E O STATUS DO ALUGUEL;
-SELECT a.responsavel_aluguel,
+SELECT a.id_aluguel,
+a.responsavel_aluguel,
 a.data_aluguel,
+a.data_devolucao,
+l.url_imagem,
 l.nome_livro,
 al.nome_aluno,
+t.nome_turma,
 s.tipo
 FROM alugueis AS a 
 JOIN livros AS l ON a.livro_id = id_livro
 JOIN alunos AS al ON a.aluno_id = id_aluno
+JOIN turmas AS t ON al.turma_id = id_turma
 JOIN status AS s ON a.status_id = id_status;
