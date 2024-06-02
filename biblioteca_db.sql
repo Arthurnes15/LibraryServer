@@ -195,7 +195,8 @@ a.nome_aluno,
 a.email_aluno, 
 t.nome_turma
 FROM alunos AS a
-JOIN turmas AS t ON a.turma_id = id_turma;
+JOIN turmas AS t ON a.turma_id = id_turma
+ORDER BY nome_aluno ASC;
 
 -- CADASTRO DOS STATUS
 INSERT INTO status(id_status, tipo) VALUES
@@ -211,7 +212,7 @@ INSERT INTO alugueis (responsavel_aluguel, livro_id, aluno_id, status_id, data_d
 VALUES ('Kauã', 6, 1, 1, '2023-12-12');
 
 -- SELECIONA TODOS OS ALUGUEIS
-SELECT * FROM alugueis;	
+SELECT * FROM alugueis;		
 
 -- SELECIONA RESPONSÁVEL DO ALUGUEL COM SUA DATA, O LIVRO ALUGADO E O STATUS DO ALUGUEL;
 SELECT a.id_aluguel,

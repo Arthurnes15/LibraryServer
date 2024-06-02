@@ -1,10 +1,11 @@
-import express from 'express'
+import express from 'express';
 const app = express();
 import { createPool } from "mysql2";
 import cors from "cors";
-import bcrypt from 'bcrypt';
 
-const saltRounds = 10;
+app.listen(3001, () => {
+    console.log("rodando servidor")
+});
 
 const corsOptions = {
     origin: 'http://localhost:3000', 
@@ -40,9 +41,9 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/register-book", (req, res) => {
-    const {book, author_book, gender, publisher, isbn, amount, volume, cdd, publication, image} = req.body;
+    const {book, author_book, gender, publisher, isbn_book, amount, volume, cdd, publication, image} = req.body;
 
-    let SQL = `INSERT INTO livros(ISBN, nome_livro, volume_livro, CDD, n_exemplares, data_publicacao, url_imagem, autor_id, genero_id, editora_id) VALUES('${isbn}', '${book}', ${volume}, '${cdd}', ${amount}, '${publication}', '${image}', ${author_book}, ${gender}, ${publisher});`;
+    let SQL = `INSERT INTO livros(ISBN, nome_livro, volume_livro, CDD, n_exemplares, data_publicacao, url_imagem, autor_id, genero_id, editora_id) VALUES('${isbn_book}', '${book}', ${volume}, '${cdd}', ${amount}, '${publication}', '${image}', ${author_book}, ${gender}, ${publisher});`;
 
     db.query(SQL, (err, result) => {
         console.log(err);
@@ -107,7 +108,7 @@ app.post("/register-author", (req, res) => {
 });
 
 app.get("/getBooks", (req, res) => {
-    let SQL = "SELECT l.id_livro, l.n_exemplares, l.ISBN, l.CDD, g.genero, l.data_publicacao, l.url_imagem, l.nome_livro, a.nome_autor, e.editora FROM livros AS l JOIN autores AS a ON l.autor_id = id_autor JOIN generos AS g ON l.genero_id = id_genero JOIN editoras AS e ON l.editora_id = id_editora ORDER BY nome_livro ASC";
+    let SQL = "SELECT l.id_livro, l.n_exemplares, l.volume_livro, l.ISBN, l.CDD, g.genero, l.data_publicacao, l.url_imagem, l.nome_livro, a.nome_autor, e.editora FROM livros AS l JOIN autores AS a ON l.autor_id = id_autor JOIN generos AS g ON l.genero_id = id_genero JOIN editoras AS e ON l.editora_id = id_editora ORDER BY nome_livro ASC";
 
     db.query(SQL, (err, result) => {
         if(err) console.log(err)
@@ -143,14 +144,14 @@ app.get("/getPublishers", (req, res) => {
 });
 
 app.put("/edit", (req, res) => {
-    const {id, name, author, publisher, gender, isbn, amount, cdd} = req.body;
-    let SQL = `UPDATE livros SET ISBN = '${isbn}', CDD = '${cdd}', nome_livro = '${name}', n_exemplares = ${amount},  editora_id = ${publisher}, genero_id = ${gender}, autor_id = ${author} WHERE id_livro = ${id};`
+    const {book_id, name_book, name_author, publisher_book, gender_book, isbn_book, amount_book, cdd_book} = req.body;
+    let SQL = `UPDATE livros SET ISBN = '${isbn_book}', CDD = '${cdd_book}', nome_livro = '${name_book}', n_exemplares = ${amount_book},  editora_id = ${publisher_book}, genero_id = ${gender_book}, autor_id = ${name_author} WHERE id_livro = ${book_id};`
 
     db.query(SQL, (err, result) => {
         if(err) console.log(err);
         else res.send(result);
-    })
-})
+    });
+});
 
 app.put("/editStatus", (req, res) => {
     const {status_id, rent_id} = req.body;
@@ -179,6 +180,16 @@ app.delete("/deleteStudent/:id", (req, res) => {
         else res.send(result);
     })
 });
+
+app.delete("/deleteRent/:id", (req, res) => {
+    const { id } = req.params;
+    let SQL = `DELETE FROM alugueis WHERE id_aluguel = ${id}`;
+
+    db.query(SQL, (err, result) => {
+        if(err) console.log(err);
+        else res.send(result);
+    })
+} )
 
 app.post("/rent", (req, res) => {
     const {book_id, responsible_rent, student, status_rent, date_return} = req.body;
@@ -218,7 +229,5 @@ app.get("/rents-returned", (req, res) => {
     });
 });
 
-app.listen(3001, () => {
-    console.log("rodando servidor")
-});
+
 
