@@ -144,7 +144,7 @@ app.get("/getPublishers", (req, res) => {
 });
 
 app.put("/edit", (req, res) => {
-    const {book_id, name_book, name_author, publisher_book, gender_book, isbn_book, amount_book, cdd_book} = req.body;
+    const { book_id, name_book, name_author, publisher_book, gender_book, isbn_book, amount_book, cdd_book } = req.body;
     let SQL = `UPDATE livros SET ISBN = '${isbn_book}', CDD = '${cdd_book}', nome_livro = '${name_book}', n_exemplares = ${amount_book},  editora_id = ${publisher_book}, genero_id = ${gender_book}, autor_id = ${name_author} WHERE id_livro = ${book_id};`
 
     db.query(SQL, (err, result) => {
@@ -161,7 +161,17 @@ app.put("/editStatus", (req, res) => {
         if(err) console.log(err)
         else res.send(result)
     })
-})
+});
+
+app.put("/editStudent", (req, res) => {
+    const {student_id, name_student, email_student, group} = req.body;
+    let SQL = `UPDATE alunos SET nome_aluno='${name_student}', email_aluno='${email_student}', turma_id=${group} WHERE id_aluno=${student_id}`;
+
+    db.query(SQL, (err, result) => {
+        if(err) console.log(err)
+        else res.send(result);
+    });
+});
 
 app.delete("/delete/:id", (req, res) => {
     const { id } = req.params;
