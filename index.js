@@ -108,6 +108,15 @@ app.post("/register-author", (req, res) => {
 });
 
 app.get("/getBooks", (req, res) => {
+    let SQL = "SELECT l.id_livro, l.n_exemplares, l.volume_livro, l.ISBN, l.CDD, g.genero, l.data_publicacao, l.url_imagem, l.nome_livro, a.nome_autor, e.editora FROM livros AS l JOIN autores AS a ON l.autor_id = id_autor JOIN generos AS g ON l.genero_id = id_genero JOIN editoras AS e ON l.editora_id = id_editora ORDER BY nome_livro ASC LIMIT 100";
+
+    db.query(SQL, (err, result) => {
+        if(err) console.log(err)
+        else res.send(result)
+    })
+});
+
+app.get("/getAllBooks", (req, res) => {
     let SQL = "SELECT l.id_livro, l.n_exemplares, l.volume_livro, l.ISBN, l.CDD, g.genero, l.data_publicacao, l.url_imagem, l.nome_livro, a.nome_autor, e.editora FROM livros AS l JOIN autores AS a ON l.autor_id = id_autor JOIN generos AS g ON l.genero_id = id_genero JOIN editoras AS e ON l.editora_id = id_editora ORDER BY nome_livro ASC";
 
     db.query(SQL, (err, result) => {
