@@ -208,7 +208,17 @@ app.delete("/deleteRent/:id", (req, res) => {
         if(err) console.log(err);
         else res.send(result);
     })
-} )
+});
+
+app.delete("/deleteGroup/:id", (req, res) => {
+    const { id } = req.params;
+    let SQL = `DELETE FROM turmas WHERE id_turma = ${id}`;
+
+    db.query(SQL, (err, result) => {
+        if(err) console.log(err);
+        else res.send(result);
+    })
+})
 
 app.post("/rent", (req, res) => {
     const {book_id, responsible_rent, student, status_rent, date_return} = req.body;
