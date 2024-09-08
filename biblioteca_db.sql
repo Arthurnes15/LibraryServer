@@ -136,7 +136,7 @@ SELECT COUNT(*) FROM editoras;
 
 -- CADASTRO DE LIVROS
 INSERT INTO livros(ISBN, nome_livro, volume_livro, CDD, n_exemplares, data_publicacao, url_imagem, autor_id, genero_id, editora_id)
-VALUES('85-209-1150-1', 'Sangarana', 1, '823', 1, '1999-01-01','https://firebasestorage.googleapis.com/v0/b/booksimages-33709.appspot.com/o/images%2Fsagarana.jpg?alt=media&token=941cd4d1-b542-4225-9ee6-f04ca1b0fc6b',  10, 12, 11);
+VALUES('85-209-1150-1', 'Sangarana', 1, '823', 1, '1999','https://firebasestorage.googleapis.com/v0/b/booksimages-33709.appspot.com/o/images%2Fsagarana.jpg?alt=media&token=941cd4d1-b542-4225-9ee6-f04ca1b0fc6b',  10, 12, 11);
 
 -- SELECIONA TODOS OS LIVROS
 SELECT * FROM livros;
@@ -151,7 +151,7 @@ e.editora,
 l.url_imagem,
 g.genero,
 l.n_exemplares,
-l.data_publicacao
+YEAR(l.data_publicacao)
 FROM livros AS l 
 JOIN autores AS a ON l.autor_id = id_autor 
 JOIN editoras AS e ON l.editora_id = id_editora
@@ -212,7 +212,7 @@ INSERT INTO alugueis (responsavel_aluguel, livro_id, aluno_id, status_id, data_d
 VALUES ('Kauã', 6, 1, 1, '2023-12-12');
 
 -- SELECIONA TODOS OS ALUGUEIS
-SELECT * FROM alugueis;		
+SELECT * FROM alugueis;
 
 -- SELECIONA RESPONSÁVEL DO ALUGUEL COM SUA DATA, O LIVRO ALUGADO E O STATUS DO ALUGUEL;
 SELECT a.id_aluguel,

@@ -30,10 +30,10 @@ app.post("/login", (req, res) => {
 
     db.query(SQL, (err, result) => {
         if(err) {
-            res.send(err);
+            res.status(500).send(err);
         }
         if(result.length > 0) {
-            res.send({msg: "Usuário logado"});
+            res.status(400).send({msg: "Usuário logado"});
         } else {
             res.send({msg: "Usuário negado"});
         }
@@ -257,6 +257,16 @@ app.get("/rents-returned", (req, res) => {
         else res.send(result);
     });
 });
+
+app.put("/editRent", (req, res) => {
+    const {rent_id, date_return} = req.body;
+    let SQL = `UPDATE alugueis SET data_devolucao = '${date_return}'  WHERE id_aluguel = ${ rent_id };`
+
+    db.query(SQL, (err, result) => {
+        if(err) console.log(err)
+        else res.send(result)
+    });
+})
 
 
 
