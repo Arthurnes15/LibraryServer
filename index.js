@@ -23,6 +23,8 @@ const db = createPool({
     database: "biblioteca",
 });
 
+// POST QUERYS
+
 app.post("/login", (req, res) => {
     const { name, email, password } = req.body;
 
@@ -40,17 +42,17 @@ app.post("/login", (req, res) => {
     })
 });
 
-app.post("/register-book", (req, res) => {
+app.post("/registerBook", (req, res) => {
     const {book, author_book, gender, publisher, isbn_book, amount, volume, cdd, publication, image} = req.body;
 
-    let SQL = `INSERT INTO livros(ISBN, nome_livro, volume_livro, CDD, n_exemplares, data_publicacao, url_imagem, autor_id, genero_id, editora_id) VALUES('${isbn_book}', '${book}', ${volume}, '${cdd}', ${amount}, '${publication}', '${image}', ${author_book}, ${gender}, ${publisher});`;
+    let SQL = `INSERT INTO livros(ISBN, nome_livro, volume_livro, CDD, n_exemplares, data_publicacao, url_imagem, autor_id, genero_id, editora_id) VALUES('${isbn_book}', '${book}', ${volume}, '${cdd}', ${amount}, '${publication}', '${image}', ${author_book}, ${gender}, '${publisher}');`;
 
     db.query(SQL, (err, result) => {
         console.log(err);
     })
 });
 
-app.post("/register-student", (req, res) => {
+app.post("/registerStudent", (req, res) => {
     const {name, email, group} = req.body;
 
     let SQL = `INSERT INTO alunos (nome_aluno, email_aluno, turma_id) VALUES ('${name}', '${email}', '${group}')`;
@@ -59,6 +61,39 @@ app.post("/register-student", (req, res) => {
         console.log(err);
     })
 });
+
+app.post("/registerPublisher", (req, res) => {
+    const {reg_pub} = req.body;
+
+    let SQL = `INSERT INTO editoras (editora) VALUES ('${reg_pub}')`;
+
+    db.query(SQL, (err, result) => {
+        console.log(err);
+    })
+})
+
+app.post("/registerAuthor", (req, res) => {
+    const {reg_author} = req.body;
+
+    let SQL = `INSERT INTO autores (nome_autor) VALUES ('${reg_author}')`;
+
+    db.query(SQL, (err, result) => {
+        console.log(err);
+    })
+});
+
+app.post("/rent", (req, res) => {
+    const {book_id, responsible_rent, student, status_rent, date_return} = req.body;
+
+    let SQL = `INSERT INTO alugueis (responsavel_aluguel, livro_id, aluno_id, status_id, data_devolucao)
+    VALUES ('${responsible_rent}', ${book_id}, ${student}, ${status_rent}, '${date_return}');`
+
+    db.query(SQL, (err, result) => {
+        console.log(err);
+    });
+});
+
+// GET QUERYS
 
 app.get("/getStudents", (req, res) => {
     let SQL = "SELECT a.id_aluno, a.nome_aluno, a.email_aluno, t.nome_turma FROM alunos AS a JOIN turmas AS t ON a.turma_id = id_turma;"
@@ -84,26 +119,6 @@ app.get("/getStatus", (req, res) => {
     db.query(SQL, (err, result) => {
         if(err) console.log(err)
         else res.send(result)
-    })
-});
-
-app.post("/register-publisher", (req, res) => {
-    const {reg_pub} = req.body;
-
-    let SQL = `INSERT INTO editoras (editora) VALUES ('${reg_pub}')`;
-
-    db.query(SQL, (err, result) => {
-        console.log(err);
-    })
-})
-
-app.post("/register-author", (req, res) => {
-    const {reg_author} = req.body;
-
-    let SQL = `INSERT INTO autores (nome_autor) VALUES ('${reg_author}')`;
-
-    db.query(SQL, (err, result) => {
-        console.log(err);
     })
 });
 
@@ -152,6 +167,35 @@ app.get("/getPublishers", (req, res) => {
     })
 });
 
+app.get("/rents", (req, res) => {
+    let SQL = "SELECT a.id_aluguel, a.responsavel_aluguel, a.data_aluguel, a.data_devolucao, l.url_imagem, l.nome_livro, al.nome_aluno, t.nome_turma, s.tipo FROM alugueis AS a JOIN livros AS l ON a.livro_id = id_livro JOIN alunos AS al ON a.aluno_id = id_aluno JOIN turmas AS t ON al.turma_id = id_turma JOIN status AS s ON a.status_id = id_status WHERE id_status=1;"
+
+    db.query(SQL, (err, result) => {
+        if (err) console.log(err)
+        else res.send(result);
+    })
+});
+
+app.get("/rentsPending", (req, res) => {
+    let SQL = "SELECT a.id_aluguel, a.responsavel_aluguel, a.data_aluguel, a.data_devolucao, l.url_imagem, l.nome_livro, al.nome_aluno, t.nome_turma, s.tipo FROM alugueis AS a JOIN livros AS l ON a.livro_id = id_livro JOIN alunos AS al ON a.aluno_id = id_aluno JOIN turmas AS t ON al.turma_id = id_turma JOIN status AS s ON a.status_id = id_status WHERE id_status=2;"
+
+    db.query(SQL, (err, result) => {
+        if (err) console.log(err)
+        else res.send(result);
+    });
+});
+
+app.get("/rentsReturned", (req, res) => {
+    let SQL = "SELECT a.id_aluguel, a.responsavel_aluguel, a.data_aluguel, a.data_devolucao, l.url_imagem, l.nome_livro, al.nome_aluno, t.nome_turma, s.tipo FROM alugueis AS a JOIN livros AS l ON a.livro_id = id_livro JOIN alunos AS al ON a.aluno_id = id_aluno JOIN turmas AS t ON al.turma_id = id_turma JOIN status AS s ON a.status_id = id_status WHERE id_status=3;"
+
+    db.query(SQL, (err, result) => {
+        if (err) console.log(err)
+        else res.send(result);
+    });
+});
+
+// PUT QUERYS
+
 app.put("/edit", (req, res) => {
     const { book_id, name_book, name_author, publisher_book, gender_book, isbn_book, amount_book, cdd_book } = req.body;
     let SQL = `UPDATE livros SET ISBN = '${isbn_book}', CDD = '${cdd_book}', nome_livro = '${name_book}', n_exemplares = ${amount_book},  editora_id = ${publisher_book}, genero_id = ${gender_book}, autor_id = ${name_author} WHERE id_livro = ${book_id};`
@@ -181,6 +225,18 @@ app.put("/editStudent", (req, res) => {
         else res.send(result);
     });
 });
+
+app.put("/editRent", (req, res) => {
+    const {rent_id, date_return} = req.body;
+    let SQL = `UPDATE alugueis SET data_devolucao = '${date_return}'  WHERE id_aluguel = ${ rent_id };`
+
+    db.query(SQL, (err, result) => {
+        if(err) console.log(err)
+        else res.send(result)
+    });
+});
+
+// DELETE QUERYS
 
 app.delete("/delete/:id", (req, res) => {
     const { id } = req.params;
@@ -218,55 +274,7 @@ app.delete("/deleteGroup/:id", (req, res) => {
         if(err) console.log(err);
         else res.send(result);
     })
-})
-
-app.post("/rent", (req, res) => {
-    const {book_id, responsible_rent, student, status_rent, date_return} = req.body;
-
-    let SQL = `INSERT INTO alugueis (responsavel_aluguel, livro_id, aluno_id, status_id, data_devolucao)
-    VALUES ('${responsible_rent}', ${book_id}, ${student}, ${status_rent}, '${date_return}');`
-
-    db.query(SQL, (err, result) => {
-        console.log(err);
-    });
 });
-
-app.get("/rents", (req, res) => {
-    let SQL = "SELECT a.id_aluguel, a.responsavel_aluguel, a.data_aluguel, a.data_devolucao, l.url_imagem, l.nome_livro, al.nome_aluno, t.nome_turma, s.tipo FROM alugueis AS a JOIN livros AS l ON a.livro_id = id_livro JOIN alunos AS al ON a.aluno_id = id_aluno JOIN turmas AS t ON al.turma_id = id_turma JOIN status AS s ON a.status_id = id_status WHERE id_status=1;"
-
-    db.query(SQL, (err, result) => {
-        if (err) console.log(err)
-        else res.send(result);
-    })
-});
-
-app.get("/rents-pending", (req, res) => {
-    let SQL = "SELECT a.id_aluguel, a.responsavel_aluguel, a.data_aluguel, a.data_devolucao, l.url_imagem, l.nome_livro, al.nome_aluno, t.nome_turma, s.tipo FROM alugueis AS a JOIN livros AS l ON a.livro_id = id_livro JOIN alunos AS al ON a.aluno_id = id_aluno JOIN turmas AS t ON al.turma_id = id_turma JOIN status AS s ON a.status_id = id_status WHERE id_status=2;"
-
-    db.query(SQL, (err, result) => {
-        if (err) console.log(err)
-        else res.send(result);
-    });
-});
-
-app.get("/rents-returned", (req, res) => {
-    let SQL = "SELECT a.id_aluguel, a.responsavel_aluguel, a.data_aluguel, a.data_devolucao, l.url_imagem, l.nome_livro, al.nome_aluno, t.nome_turma, s.tipo FROM alugueis AS a JOIN livros AS l ON a.livro_id = id_livro JOIN alunos AS al ON a.aluno_id = id_aluno JOIN turmas AS t ON al.turma_id = id_turma JOIN status AS s ON a.status_id = id_status WHERE id_status=3;"
-
-    db.query(SQL, (err, result) => {
-        if (err) console.log(err)
-        else res.send(result);
-    });
-});
-
-app.put("/editRent", (req, res) => {
-    const {rent_id, date_return} = req.body;
-    let SQL = `UPDATE alugueis SET data_devolucao = '${date_return}'  WHERE id_aluguel = ${ rent_id };`
-
-    db.query(SQL, (err, result) => {
-        if(err) console.log(err)
-        else res.send(result)
-    });
-})
 
 
 
