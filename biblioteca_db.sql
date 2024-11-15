@@ -62,6 +62,7 @@ CREATE TABLE alugueis (
 	id_aluguel INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     responsavel_aluguel VARCHAR(50),
     data_aluguel TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_devolucao DATETIME,
     livro_id INT NOT NULL,
     aluno_id INT NOT NULL,
     status_id INT NOT NULL,
@@ -69,6 +70,8 @@ CREATE TABLE alugueis (
     FOREIGN KEY (livro_id) REFERENCES livros(id_livro),
     FOREIGN KEY (status_id) REFERENCES status(id_status)
 );
+ALTER TABLE alugueis MODIFY data_devolucao date;
+SELECT * FROM alugueis;
 
 -- CADASTRO DE AUTORES
 INSERT INTO autores (nome_autor) VALUES 
@@ -108,15 +111,12 @@ INSERT INTO generos (genero) VALUES
 -- SELECIONA OS GÊNEROS EM ORDEM ALFABÉTICA
 SELECT * FROM generos ORDER BY genero ASC;
 
--- CADASTRO TESTE DE EDITORAS
-INSERT INTO editoras(editora) VALUES 
+-- CADASTRO DE EDITORAS
+INSERT INTO editoras (editora) VALUES 
 ('Harper Collins'),
 ('Martins Fontes'),
 ('Rocco'),
-('Thomas Nelson');
-
--- CADASTRO DE EDITORAS
-INSERT INTO editoras (editora) VALUES 
+('Thomas Nelson'),
 ('Nova Fronteira'),
 ('L&PM'),
 ('UFC edições'),
@@ -132,11 +132,10 @@ INSERT INTO editoras (editora) VALUES
 
 -- SELECIONA AS EDITORAS EM ORDEM ALFABÉTICA
 SELECT * FROM editoras ORDER BY editora ASC;
-SELECT COUNT(*) FROM editoras;
 
 -- CADASTRO DE LIVROS
 INSERT INTO livros(ISBN, nome_livro, volume_livro, CDD, n_exemplares, data_publicacao, url_imagem, autor_id, genero_id, editora_id)
-VALUES('85-209-1150-1', 'Sangarana', 1, '823', 1, '1999','https://firebasestorage.googleapis.com/v0/b/booksimages-33709.appspot.com/o/images%2Fsagarana.jpg?alt=media&token=941cd4d1-b542-4225-9ee6-f04ca1b0fc6b',  10, 12, 11);
+VALUES('8520911501', 'Sagarana', 1, '823', 1, '1999','https://firebasestorage.googleapis.com/v0/b/booksimages-33709.appspot.com/o/images%2Fsagarana.jpg?alt=media&token=941cd4d1-b542-4225-9ee6-f04ca1b0fc6b',  4, 12, 5);
 
 -- SELECIONA TODOS OS LIVROS
 SELECT * FROM livros;
@@ -151,7 +150,7 @@ e.editora,
 l.url_imagem,
 g.genero,
 l.n_exemplares,
-YEAR(l.data_publicacao)
+l.data_publicacao
 FROM livros AS l 
 JOIN autores AS a ON l.autor_id = id_autor 
 JOIN editoras AS e ON l.editora_id = id_editora
@@ -192,7 +191,8 @@ SELECT * FROM alunos ORDER BY nome_aluno ASC;
 -- SELECIONA OS ALUNOS COM SUAS TURMAS
 SELECT a.id_aluno, 
 a.nome_aluno,
-a.email_aluno, 
+a.email_aluno,
+t.id_turma,
 t.nome_turma
 FROM alunos AS a
 JOIN turmas AS t ON a.turma_id = id_turma
@@ -229,3 +229,5 @@ JOIN livros AS l ON a.livro_id = id_livro
 JOIN alunos AS al ON a.aluno_id = id_aluno
 JOIN turmas AS t ON al.turma_id = id_turma
 JOIN status AS s ON a.status_id = id_status;
+
+SELECT id_aluguel, data_devolucao FROM alugueis;

@@ -96,7 +96,7 @@ app.post("/rent", (req, res) => {
 // GET QUERYS
 
 app.get("/getStudents", (req, res) => {
-    let SQL = "SELECT a.id_aluno, a.nome_aluno, a.email_aluno, t.nome_turma FROM alunos AS a JOIN turmas AS t ON a.turma_id = id_turma;"
+    let SQL = "SELECT a.id_aluno, a.nome_aluno, a.email_aluno, t.id_turma, t.nome_turma FROM alunos AS a JOIN turmas AS t ON a.turma_id = id_turma;"
 
     db.query(SQL, (err, result) => {
         if(err) console.log(err)
@@ -123,7 +123,7 @@ app.get("/getStatus", (req, res) => {
 });
 
 app.get("/getBooks", (req, res) => {
-    let SQL = "SELECT l.id_livro, l.n_exemplares, l.volume_livro, l.ISBN, l.CDD, g.genero, l.data_publicacao, l.url_imagem, l.nome_livro, a.nome_autor, e.editora FROM livros AS l JOIN autores AS a ON l.autor_id = id_autor JOIN generos AS g ON l.genero_id = id_genero JOIN editoras AS e ON l.editora_id = id_editora ORDER BY nome_livro ASC LIMIT 100";
+    let SQL = "SELECT l.id_livro, l.n_exemplares, l.volume_livro, l.ISBN, l.CDD, g.genero, g.id_genero, l.data_publicacao, l.url_imagem, l.nome_livro, a.nome_autor, a.id_autor, e.editora, e.id_editora FROM livros AS l JOIN autores AS a ON l.autor_id = id_autor JOIN generos AS g ON l.genero_id = id_genero JOIN editoras AS e ON l.editora_id = id_editora ORDER BY nome_livro ASC LIMIT 100";
 
     db.query(SQL, (err, result) => {
         if(err) console.log(err)
@@ -132,7 +132,7 @@ app.get("/getBooks", (req, res) => {
 });
 
 app.get("/getAllBooks", (req, res) => {
-    let SQL = "SELECT l.id_livro, l.n_exemplares, l.volume_livro, l.ISBN, l.CDD, g.genero, l.data_publicacao, l.url_imagem, l.nome_livro, a.nome_autor, e.editora FROM livros AS l JOIN autores AS a ON l.autor_id = id_autor JOIN generos AS g ON l.genero_id = id_genero JOIN editoras AS e ON l.editora_id = id_editora ORDER BY nome_livro ASC";
+    let SQL = "SELECT l.id_livro, l.n_exemplares, l.volume_livro, l.ISBN, l.CDD, g.id_genero, g.genero, l.data_publicacao, l.url_imagem, l.nome_livro, a.id_autor, a.nome_autor, e.editora, e.id_editora FROM livros AS l JOIN autores AS a ON l.autor_id = id_autor JOIN generos AS g ON l.genero_id = id_genero JOIN editoras AS e ON l.editora_id = id_editora ORDER BY nome_livro ASC";
 
     db.query(SQL, (err, result) => {
         if(err) console.log(err)
@@ -141,7 +141,7 @@ app.get("/getAllBooks", (req, res) => {
 });
 
 app.get("/getAuthors", (req, res) => {
-    let SQL = "SELECT * FROM autores ORDER BY nome_autor ASC";
+    let SQL = "SELECT * FROM autores ORDER BY id_autor ASC";
 
     db.query(SQL, (err, result) => {
         if(err) console.log(err)
@@ -150,7 +150,7 @@ app.get("/getAuthors", (req, res) => {
 });
 
 app.get("/getGenders", (req, res) => {
-    let SQL = "SELECT * FROM generos ORDER BY genero ASC";
+    let SQL = "SELECT * FROM generos ORDER BY id_genero ASC";
 
     db.query(SQL, (err, result) => {
         if(err) console.log(err)
@@ -159,7 +159,7 @@ app.get("/getGenders", (req, res) => {
 })
 
 app.get("/getPublishers", (req, res) => {
-    let SQL = "SELECT * FROM editoras ORDER BY editora ASC";
+    let SQL = "SELECT * FROM editoras ORDER BY id_editora ASC";
 
     db.query(SQL, (err, result) => {
         if(err) console.log(err)
@@ -197,8 +197,8 @@ app.get("/rentsReturned", (req, res) => {
 // PUT QUERYS
 
 app.put("/edit", (req, res) => {
-    const { book_id, name_book, name_author, publisher_book, gender_book, isbn_book, amount_book, cdd_book } = req.body;
-    let SQL = `UPDATE livros SET ISBN = '${isbn_book}', CDD = '${cdd_book}', nome_livro = '${name_book}', n_exemplares = ${amount_book},  editora_id = ${publisher_book}, genero_id = ${gender_book}, autor_id = ${name_author} WHERE id_livro = ${book_id};`
+    const { id, book, author, publisher, gender, isbn, amount, cdd, volume } = req.body;
+    let SQL = `UPDATE livros SET ISBN = '${isbn}', CDD = '${cdd}', nome_livro = '${book}', n_exemplares = ${amount}, volume_livro = ${volume},  editora_id = ${publisher}, genero_id = ${gender}, autor_id = ${author} WHERE id_livro = ${id};`
 
     db.query(SQL, (err, result) => {
         if(err) console.log(err);
@@ -217,8 +217,8 @@ app.put("/editStatus", (req, res) => {
 });
 
 app.put("/editStudent", (req, res) => {
-    const {student_id, name_student, email_student, group} = req.body;
-    let SQL = `UPDATE alunos SET nome_aluno='${name_student}', email_aluno='${email_student}', turma_id=${group} WHERE id_aluno=${student_id}`;
+    const {id, name, email, group} = req.body;
+    let SQL = `UPDATE alunos SET nome_aluno='${name}', email_aluno='${email}', turma_id=${group} WHERE id_aluno=${id}`;
 
     db.query(SQL, (err, result) => {
         if(err) console.log(err)
@@ -235,6 +235,16 @@ app.put("/editRent", (req, res) => {
         else res.send(result)
     });
 });
+
+app.put("/editGroup", (req, res) => {
+    const {id, group} = req.body;
+    let SQL = `UPDATE turmas SET nome_turma = '${group}' WHERE id_turma = ${id}`;
+
+    db.query(SQL, (err, result) => {
+        if(err) console.log(err)
+        else res.send(result)
+    })
+})
 
 // DELETE QUERYS
 
